@@ -1,3 +1,20 @@
+/* DESCRIPCIÓN:
+
+Este código genera un reporte detallado por “formato” (tipo de evento o competición) con estadísticas individuales 
+y grupales de cuatro usuarios (barrera, chochos, dani, velez). Para cada usuario se calcula:
+1. Total de partidos por formato.
+2. Puntaje total real y promedio real (rating).
+3. Puntaje esperado y promedio esperado basado solo en respuestas marcadas como "Contestado".
+4. Comparativa de desempeño real vs esperado.
+5. Promedios grupales reales y esperados por formato.
+
+RESULTADO: Tabla comparativa del rendimiento individual y grupal por tipo de evento, con métricas reales y 
+esperadas para cuatro usuarios, útil para evaluar precisión, participación y consistencia de cada uno.
+
+UTILIDAD: Diseño reportes analíticos complejos en SQL, comparando KPIs individuales y grupales a partir de 
+múltiples métricas agregadas, utilizando estructuras limpias como CTEs y funciones estadísticas para una toma 
+de decisiones basada en datos. */
+
 WITH
     barrera AS (
         SELECT

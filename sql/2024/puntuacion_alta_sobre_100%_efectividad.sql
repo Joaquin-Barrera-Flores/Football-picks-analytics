@@ -1,3 +1,21 @@
+/* DESCRIPCIÓN:
+Extrae los puntajes máximos diarios por usuario (barrera, chochos, dani, velez) desde la tabla puntos_dia_2024, 
+solo si su cociente (porcentaje de efectividad) es 100% (cociente_x = 1).
+
+1. Genera consultas individuales para cada usuario ordenadas por puntaje máximo (MAX).
+En una segunda parte más completa:
+2. Usa CTEs (Common Table Expressions) para encapsular esas consultas y aplicar un filtro por puntaje mínimo 
+(HAVING).
+3. Une estas CTEs con la tabla principal a través de LEFT JOIN para consolidar los puntajes por fecha.
+4. Usa COALESCE y CAST para mostrar “n/a” en lugar de NULL, asegurando un reporte legible. 
+
+RESULTADO: Reporte de máximos puntajes individuales en un día, filtrado por rendimiento perfecto y formateado 
+para lectura clara.
+
+UTILIDAD: Consulta avanzada que identifica y consolida los máximos puntajes diarios por usuario solo cuando 
+tienen un rendimiento perfecto. Uso de CTEs, joins condicionales y tratamiento de valores nulos para generar 
+reportes limpios y precisos, facilitando la evaluación individual de desempeño. */
+
 /* Tablas individuales con puntajes sobre rating 100% ordenadas DESC */
 -- Barrera
 SELECT

@@ -1,7 +1,28 @@
+/* DESCRIPCIÓN:
+
+Genera un reporte consolidado por torneo, calculando para cada uno de los cuatro participantes 
+(barrera, chochos, dani, velez):
+1. Total de partidos contestados por torneo.
+2. Puntaje real total y promedio (rating).
+3. Puntaje y promedio esperado (basado solo en respuestas “contestadas”).
+4. Promedios generales a nivel individual y grupal.
+5. Comparación entre puntaje real y esperado por torneo.
+
+Este código reutiliza la misma estructura lógica del análisis anterior por formato, adaptándola a una nueva 
+dimensión de análisis: el torneo. Eso demuestra una alta capacidad de diseño reutilizable y flexible.
+
+RESULTADO: Reporte por torneo con métricas individuales y grupales de rendimiento real y esperado para cada 
+usuario, útil para analizar participación, efectividad y consistencia a nivel competitivo.
+
+UTILIDAD: Consulta avanzada y reutilizable que permite medir el rendimiento individual y grupal por distintas 
+dimensiones (torneo o formato). Uso de CTEs para mantener una estructura clara, y consolidación de métricas claves 
+como puntuación real, esperada y KPIs grupales que facilitan el análisis competitivo y la toma de decisiones. */
+
+
 /* Uso de: 
-WITH clause como COMMON TABLE EXPRESSION (CTE) para generar una suquery (la cual funciona como una Derived Table) que puede ser referenciada múltiples veces en la main query. 
- */
-/* Las CTEs de apellidos otorgan los datos en función de los partidos contestados;
+WITH clause como COMMON TABLE EXPRESSION (CTE) para generar una suquery (la cual funciona como una Derived Table) 
+que puede ser referenciada múltiples veces en la main query.
+Las CTEs de apellidos otorgan los datos en función de los partidos contestados;
 Además, se agregan columnas para comparación de datos si se requiere extraer la query (señaladas con --)*/
 WITH
     barrera AS (
