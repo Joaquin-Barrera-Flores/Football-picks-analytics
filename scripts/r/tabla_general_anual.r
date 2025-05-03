@@ -1,34 +1,41 @@
-# 1. Establecer working directory automáticamente
-if (!grepl("Football-picks-analytics", getwd())) {
-  setwd("~/Football-picks-analytics")  # Ajusta si usas otra ruta
-}
+# 0. Establecer el working directory adecuado automáticamente
+# if (!grepl("Football-picks-analytics", getwd())) {
+#   setwd("~/Football-picks-analytics")  
+# }
 
-# 2. Cargar paquetes con instalación automática
+# 1. De ser necesario, cargar paquetes con instalación automática
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr)
+pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate)
 
-acumulado <- read.csv(
-  here("data", "raw", "acumulados_anuales", "acumulado_total_2024.csv"))
+# 3. (Personal) Importar y reconocer el archivo
+# acumulado <- read.csv(
+#   here("data", "raw", "acumulados_anuales", "acumulado_total_2024.csv"))
 
-# 3. Importar y reconocer el archivo
+# 3. (Visitantes) Importar y reconocer el archivo
 url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_anuales/acumulado_total_2024.csv"
 acumulado <- read.csv(url)
 message("Vista previa de los datos:")
-# Verificar carga
 glimpse(acumulado)
 
+# 4. Convertir columna fecha automáticamente
+acumulado$fecha <- dmy(acumulado$fecha)
 
-# 3. Formato de fecha
-acumulado$fecha <- as.Date(acumulado$fecha, format = "%d/%m")
-write_csv(acumulado, here("data", "processed", "r", "acumulado_fechas_convertidas.csv"))
+# 5. Búsqueda de valores máximos para cada serie
+max_barrera <- acumulado[which.max(acumulado$"puntos_barrera"), ]
+max_chochos <- acumulado[which.max(acumulado$"puntos_chochos"), ]
+max_dani <- acumulado[which.max(acumulado$"puntos_dani"), ]
+max_velez <- acumulado[which.max(acumulado$"puntos_velez"), ]
 
-# 4. Búsqueda de valores máximos para cada serie
-  max_barrera <- acumulado[which.max(acumulado$"puntos_barrera"), ]
-  max_chochos <- acumulado[which.max(acumulado$"puntos_chochos"), ]
-  max_dani <- acumulado[which.max(acumulado$"puntos_dani"), ]
-  max_velez <- acumulado[which.max(acumulado$"puntos_velez"), ]
+message("Vista de max_barrera:")
+glimpse(max_barrera)
+message("Vista de max_chochos:")
+glimpse(max_chochos)
+message("Vista de max_dani:")
+glimpse(max_dani)
+message("Vista de max_velez:")
+glimpse(max_velez)
 
-# 5. Extracción del último valor de cada serie
+# 6. Extracción del último valor de cada serie
 last_point_barrera <- acumulado %>%
   slice_tail(n = 1) %>%
   select(fecha, "puntos_barrera")
@@ -42,25 +49,30 @@ last_point_velez <- acumulado %>%
   slice_tail(n = 1) %>%
   select(fecha, "puntos_velez")
 
-# 6. Abrir el servidor para la visualización de la gráfica
+message("Vista de last_point_barrera:")
+glimpse(last_point_barrera)
+message("Vista de last_point_chochos:")
+glimpse(last_point_chochos)
+message("Vista de last_point_dani:")
+glimpse(last_point_dani)
+message("Vista de last_point_velez:")
+glimpse(last_point_velez)
+# 7. Abrir el servidor para la visualización de la gráfica
 hgd()
 hgd_browse()
 
-# 7. Gráfica
+# 8. Gráfica
 p <- ggplot(acumulado, aes(x = fecha)) +
-  # Líneas principales
   geom_line(aes(y = puntos_barrera, color = "Barrera"), size = 0.35) +
   geom_line(aes(y = puntos_chochos, color = "Chochos"), size = 0.35) +
   geom_line(aes(y = puntos_dani, color = "Dani"), size = 0.35) +
   geom_line(aes(y = puntos_velez, color = "Vélez"), size = 0.35) +
 
-  # Puntos finales (sin leyenda)
   geom_point(data = last_point_barrera, aes(x = fecha, y = puntos_barrera, color = "Barrera"), size = 0.7, show.legend = FALSE) +
   geom_point(data = last_point_chochos, aes(x = fecha, y = puntos_chochos, color = "Chochos"), size = 0.7, show.legend = FALSE) +
   geom_point(data = last_point_dani, aes(x = fecha, y = puntos_dani, color = "Dani"), size = 0.7, show.legend = FALSE) +
-  geom_point(data = last_point_velez, aes(x =fecha, y = puntos_velez, color = "Vélez"), size = 0.7, show.legend = FALSE) +
+  geom_point(data = last_point_velez, aes(x = fecha, y = puntos_velez, color = "Vélez"), size = 0.7, show.legend = FALSE) +
 
-  # Textos de los valores máximos (sin leyenda)
   geom_text(
     data = max_barrera, aes(x = fecha + 1, y = puntos_barrera, label = puntos_barrera, color = "Barrera"),
     vjust = 1, hjust = -0.1, size = 2.5, show.legend = FALSE
@@ -78,7 +90,6 @@ p <- ggplot(acumulado, aes(x = fecha)) +
     vjust = 0.5, hjust = -0.6, size = 2.5, show.legend = FALSE
   ) +
 
-  # Configuración de etiquetas y colores
   labs(
     title = "Tabla general",
     caption = "Datos a 31 de diciembre de 2024",
@@ -95,26 +106,15 @@ p <- ggplot(acumulado, aes(x = fecha)) +
   )) +
   theme_minimal()
 
-# 8. Mostrar la gráfica
+# 9. Mostrar la gráfica
 print(p)
 
-# Guardar todos los resultados procesados
-library(readr)
-dir.create(here("data", "processed", "r"), showWarnings = FALSE)
+# 10. Guardar la gráfica
+ggsave("outputs/plots/r/tabla_general_anual.png")
 
-# 1. Datos limpios
-write_csv(acumulado, here("data", "processed", "r", "acumulado_limpio.csv"))
-
-# 2. Métricas de jugadores
-list(
-  "maximos" = bind_rows(
-    max_barrera %>% mutate(jugador = "Barrera"),
-    max_chochos %>% mutate(jugador = "Chochos"),
-    # ... otros jugadores
-  ),
-  "finales" = bind_rows(
-    last_point_barrera %>% mutate(jugador = "Barrera"),
-    # ... otros jugadores
-  )
-) %>%
-  write_rds(here("data", "processed", "r", "metricas_jugadores.csv"))  # Guarda múltiples objetos
+# 11. Datos limpios
+# Maximo puntaje anual, y día alcanzado, de cada jugador
+write.csv(last_point_barrera, here("data", "processed", "puntaje_maximo_barrera_2024.csv"))
+write.csv(last_point_chochoss, here("data", "processed", "puntaje_maximo_chochos_2024.csv"))
+write.csv(last_point_dani, here("data", "processed", "puntaje_maximo_dani_2024.csv"))
+write.csv(last_point_velez, here("data", "processed", "puntaje_maximo_velez_2024.csv"))
