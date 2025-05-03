@@ -114,7 +114,7 @@ ggsave("outputs/plots/r/tabla_general_anual.png")
 
 # 11. Datos limpios
 # Maximo puntaje anual, y día alcanzado, de cada jugador
-write.csv(last_point_barrera, here("data", "processed", "puntaje_maximo_barrera_2024.csv"))
-write.csv(last_point_chochoss, here("data", "processed", "puntaje_maximo_chochos_2024.csv"))
-write.csv(last_point_dani, here("data", "processed", "puntaje_maximo_dani_2024.csv"))
-write.csv(last_point_velez, here("data", "processed", "puntaje_maximo_velez_2024.csv"))
+write.csv(last_point_barrera, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_barrera_2024.csv"))
+write.csv(last_point_chochos, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_chochos_2024.csv"))
+write.csv(last_point_dani, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_dani_2024.csv"))
+write.csv(last_point_velez, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_velez_2024.csv"))
