@@ -110,7 +110,7 @@ p <- ggplot(acumulado, aes(x = fecha)) +
 print(p)
 
 # 10. Guardar la gráfica
-ggsave("outputs/plots/r/tabla_general_anual.png")
+ggsave("outputs/plots/r/tabla_general_anual_2024.png")
 
 # 11. Datos limpios
 # Maximo puntaje anual, y día alcanzado, de cada jugador
