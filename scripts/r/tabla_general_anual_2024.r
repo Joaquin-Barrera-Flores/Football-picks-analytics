@@ -110,11 +110,11 @@ p <- ggplot(acumulado, aes(x = fecha)) +
 print(p)
 
 # 10. Guardar la gráfica
-ggsave("outputs/plots/r/tabla_general_anual_2024.png")
+ggsave("outputs/plots/r/r_tabla_general_anual_2024.png")
 
 # 11. Datos limpios
 # Maximo puntaje anual, y día alcanzado, de cada jugador
-write.csv(last_point_barrera, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_barrera_2024.csv"))
-write.csv(last_point_chochos, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_chochos_2024.csv"))
-write.csv(last_point_dani, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_dani_2024.csv"))
-write.csv(last_point_velez, here("data", "processed", "r", "metricas_de_jugadores", "puntaje_maximo_velez_2024.csv"))
+write.csv(last_point_barrera, here("data", "processed", "r", "metricas_individuales", "puntaje_maximo_barrera_2024.csv"))
+write.csv(last_point_chochos, here("data", "processed", "r", "metricas_individuales", "puntaje_maximo_chochos_2024.csv"))
+write.csv(last_point_dani, here("data", "processed", "r", "metricas_individuales", "puntaje_maximo_dani_2024.csv"))
+write.csv(last_point_velez, here("data", "processed", "r", "metricas_individuales", "puntaje_maximo_velez_2024.csv"))
