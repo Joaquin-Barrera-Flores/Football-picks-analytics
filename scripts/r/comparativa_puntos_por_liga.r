@@ -66,7 +66,7 @@ hgd()
 hgd_browse()
 
 # Crear gráfico con etiquetas de puntos
-p <- ggplot(suma_larga, aes(x = torneo, y = Puntos, fill = Jugador)) +
+B <- ggplot(suma_larga, aes(x = torneo, y = Puntos, fill = Jugador)) +
     geom_bar(
         stat = "identity",
         position = position_nudge(x = suma_larga$nudge),
@@ -100,12 +100,12 @@ p <- ggplot(suma_larga, aes(x = torneo, y = Puntos, fill = Jugador)) +
     )
 
 # Mostrar gráfico
-print(p)
+print(B)
 
 # Guardar gráfico
 ggsave(
     filename = "outputs/plots/r/r_comparativa_puntos_por_liga_2024.png",
-    plot = p,
+    plot = B,
     width = 12,
     height = 10,
     units = "in",

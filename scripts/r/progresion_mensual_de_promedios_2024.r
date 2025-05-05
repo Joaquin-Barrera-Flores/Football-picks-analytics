@@ -77,7 +77,7 @@ print(A)
 # 10. Guardar la gráfica
 ggsave(
     filename = "outputs/plots/r/r_progresion_mensual_de_promedios_2024.png",
-    plot = p,
+    plot = A,
     width = 12,
     height = 8,
     units = "in",

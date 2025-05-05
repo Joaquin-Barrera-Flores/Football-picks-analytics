@@ -62,7 +62,7 @@ hgd()
 hgd_browse()
 
 # 9. Graficar (optimizado sin aes_string)
-p <- ggplot(acumulado, aes(x = fecha)) +
+C <- ggplot(acumulado, aes(x = fecha)) +
   # Líneas por jugador
   map(jugadores, function(jugador) {
     geom_line(
@@ -96,12 +96,12 @@ p <- ggplot(acumulado, aes(x = fecha)) +
   theme_minimal()
 
 # 10. Mostrar gráfica
-print(p)
+print(C)
 
 # 11. Guardar gráfica
 ggsave(
   filename = "outputs/plots/r/r_tabla_general_anual_2024.png",
-  plot = p,
+  plot = C,
   width = 12,
   height = 8,
   units = "in",
