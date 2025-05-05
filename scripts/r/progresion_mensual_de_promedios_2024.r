@@ -59,10 +59,10 @@ A <- ggplot(prom_mensual, aes(x = mes)) +
         caption = "Datos a 31 de diciembre de 2024"
     ) +
     scale_color_manual(values = c(
-        "Barrera" = "#46bdc6",
-        "Chochos" = "#ff6d01",
-        "Dani" = "#ff7ccf",
-        "Vélez" = "#689cee"
+        "Barrera" = "#49525e",
+        "Chochos" = "#9b93c9",
+        "Dani" = "#fdb052",
+        "Vélez" = "#59acbe"
     )) +
     scale_x_date(date_breaks = "1 month", date_labels = "%b") +
     theme_minimal() +
@@ -75,7 +75,14 @@ A <- ggplot(prom_mensual, aes(x = mes)) +
 print(A)
 
 # 10. Guardar la gráfica
-ggsave("outputs/plots/r/r_progresion_mensual_de_promedios_2024.png")
+ggsave(
+    filename = "outputs/plots/r/r_progresion_mensual_de_promedios_2024.png",
+    plot = p,
+    width = 12,
+    height = 10,
+    units = "in",
+    dpi = 600
+    )
 
 # 11. Datos limpios
 # Maximo puntaje anual, y día alcanzado, de cada jugador
