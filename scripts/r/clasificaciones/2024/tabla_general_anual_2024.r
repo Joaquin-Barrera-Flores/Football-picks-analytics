@@ -111,6 +111,6 @@ ggsave(
 # 12. Guardar últimos valores
 walk(jugadores, ~ write.csv(
   ultimos[[.x]],
-  here("data", "processed", "r", "metricas_individuales", paste0("puntaje_maximo_", .x, "_2024.csv")),
+  here("data", "processed", "r", "metricas_individuales", "maximos", "2024", paste0("puntaje_maximo_", .x, "_2024.csv")),
   row.names = FALSE
 ))

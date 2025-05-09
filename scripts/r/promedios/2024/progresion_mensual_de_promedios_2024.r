@@ -86,5 +86,4 @@ ggsave(
 
 # 11. Datos limpios
 # Maximo puntaje anual, y día alcanzado, de cada jugador
-write.csv(prom_mensual, here("data", "processed", "r", "metricas_comparativas", "promedios_mensuales_2024.csv"))
-write.csv(last_points, here("data", "processed", "r", "metricas_comparativas", "promedio_diciembre_2024.csv"))
+write.csv(prom_mensual, here("data", "processed", "r", "metricas_comparativas", "promedios", "2024", "promedios_mensuales_2024.csv"))
