@@ -100,7 +100,7 @@ print(C)
 
 # 11. Guardar gráfica
 ggsave(
-  filename = "outputs/plots/r/r_tabla_general_anual_2024.png",
+  filename = "outputs/plots/r/clasificaciones/generales/2024/r_tabla_general_anual_2024.png",
   plot = C,
   width = 12,
   height = 8,
