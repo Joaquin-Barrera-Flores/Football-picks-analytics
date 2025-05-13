@@ -1,9 +1,9 @@
 # Cargar paquetes
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate)
+pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate,ggthemes)
 
 # Importar datos desde GitHub
-url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/principales/puntos_2024.csv"
+url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/principales/2024/puntos_2024.csv"
 puntuacion <- read.csv(url)
 
 filtro_continentales_total <- puntuacion %>%
@@ -88,7 +88,7 @@ con <- ggplot(suma_larga, aes(x = torneo, y = Puntos, fill = Jugador)) +
         fill = "Jugadores",
         caption = "Datos al 31 de diciembre de 2024"
     ) +
-    theme_minimal() +
+    theme_few() +
     theme(
         axis.text.x = element_text(angle = 0, hjust = 0.5, size = 7),
         plot.title = element_text(hjust = 0.5)

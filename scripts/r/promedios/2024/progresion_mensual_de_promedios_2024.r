@@ -5,14 +5,14 @@
 
 # Cargar paquetes
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate)
+pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate, ggthemes)
 
 # 3. (Personal) Importar y reconocer el archivo
 # acumulado <- read.csv(
 #   here("data", "raw", "principales", "puntos_2024.csv"))
 
 # 3. (Visitantes) Importar y reconocer el archivo
-url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/principales/puntos_2024.csv"
+url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/principales/2024/puntos_2024.csv"
 puntuacion <- read.csv(url)
 
 # Procesar datos
@@ -65,7 +65,7 @@ A <- ggplot(prom_mensual, aes(x = mes)) +
         "Vélez" = "#59acbe"
     )) +
     scale_x_date(date_breaks = "1 month", date_labels = "%b") +
-    theme_minimal() +
+    theme_few() +
     theme(
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)

@@ -5,10 +5,10 @@
 
 # 1. Cargar paquetes necesarios
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate, purrr, rlang)
+pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate, purrr, rlang, ggthemes)
 
 # 2. Importar datos (modo visitante)
-url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_anuales/acumulado_total_2024.csv"
+url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_anuales/2024/acumulado_total_2024.csv"
 acumulado <- read.csv(url)
 message("Vista previa de los datos:")
 glimpse(acumulado)
@@ -93,7 +93,7 @@ C <- ggplot(acumulado, aes(x = fecha)) +
   ) +
   scale_x_date(breaks = "1 month", date_labels = "%b") +
   scale_color_manual(values = colores) +
-  theme_minimal()
+  theme_few()
 
 # 10. Mostrar gráfica
 print(C)
@@ -102,8 +102,8 @@ print(C)
 ggsave(
   filename = "outputs/plots/r/clasificaciones/generales/2024/r_tabla_general_anual_2024.png",
   plot = C,
-  width = 12,
-  height = 8,
+  width = 20,
+  height = 12,
   units = "in",
   dpi = 600
 )
