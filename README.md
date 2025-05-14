@@ -22,13 +22,7 @@ It is based on a real-life use case with engaging and playful data, which allows
 
 ## 📁 Project Structure
 
-📦 Football-picks-analytics
-├── data/
-│   ├── raw/         # Original CSV data files
-│   └── processed/   # Cleaned datasets and calculated metrics
-├── scripts/         # R and SQL scripts for analysis and visualization
-├── outputs/         # Final plots and dashboards
-└── README.md        # Project description and documentation
+<pre> ``` 📦 Football-picks-analytics ├── data/ │ ├── raw/ # Original CSV data files │ └── processed/ # Cleaned datasets and calculated metrics ├── scripts/ # R and SQL scripts for analysis and visualization ├── outputs/ # Final plots and dashboards └── README.md # Project description and documentation ``` </pre>
 
 ---
 
