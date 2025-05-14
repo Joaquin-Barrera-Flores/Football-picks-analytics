@@ -1,7 +1,7 @@
 # ⚽ Football Picks Analytics &nbsp; ![R](https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white) ![SQL](https://img.shields.io/badge/SQL-4479A1?style=for-the-badge&logo=postgresql&logoColor=white) ![Tableau](https://img.shields.io/badge/Tableau-E97627?style=for-the-badge&logo=tableau&logoColor=white) ![BigQuery](https://img.shields.io/badge/BigQuery-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)
 
 <p align="center">
-  <img src="outputs/chat_gpt/cover.png" alt="Football Picks Analytics Overview" width="800"/>
+  <img src="outputs/plots/chat_gpt/cover.png" alt="Football Picks Analytics Overview" width="800"/>
 </p>
 
 A personal project aimed at analyzing data, generating statistics, and creating visualizations based on a friendly competition inspired by the question: **"Who has the best intuition for football?"**  
