@@ -16,7 +16,7 @@ It is based on a real-life use case with engaging and playful data, which allows
 - **Development environments:** Visual Studio Code, RStudio  
 - **Version control:** GitHub (integrated with Visual Studio Code)  
 - **Spreadsheet editors:** Google Sheets, Microsoft Excel  
-- **Data visualization tools:** Tableau, ggplot2 (R)
+- **Data visualization tools:** Tableau, Visual Studio Code (R)
 
 ---
 
