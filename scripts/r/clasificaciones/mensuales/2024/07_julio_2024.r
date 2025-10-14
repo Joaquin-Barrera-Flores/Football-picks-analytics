@@ -1,24 +1,25 @@
-# 0. Establecer el working directory adecuado automáticamente
-# if (!grepl("Football-picks-analytics", getwd())) {
-#   setwd("~/Football-picks-analytics")
-# }
+# SECCIÓN: CARGA DE PAQUETES Y DATOS
 
-# 1. Cargar paquetes necesarios
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate, purrr, rlang, ggthemes)
 
-# 2. Importar datos (modo visitante)
+#SECCIÓN: IMPORTAR DATOS Y VISTA PREVIA
+
 url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_mensuales/2024/julio_2024.csv"
 acumulado <- read.csv(url)
 message("Vista previa de los datos:")
 glimpse(acumulado)
 
-# 3. Convertir fechas
+# SECCIÓN: PREPARACIÓN DE DATOS
+
 acumulado$julio <- dmy(acumulado$julio)
 
-# 4. Configurar nombres y colores
+# SECCIÓN: CONFIGURACIÓN
+
 jugadores <- c("barrera", "chochos", "dani", "velez")
+
 nombres_jugadores <- c("barrera" = "Barrera", "chochos" = "Chochos", "dani" = "Dani", "velez" = "Vélez")
+
 colores <- c(
     "Barrera" = "#49525e",
     "Chochos" = "#9b93c9",
@@ -26,7 +27,6 @@ colores <- c(
     "Vélez" = "#59acbe"
 )
 
-# 5. Ajustes individuales por jugador (horizontal y vertical)
 ajustes_texto <- list(
     barrera = list(desp_dias = 1, desp_pct = 0.01),
     chochos = list(desp_dias = 1, desp_pct = -0.02),
@@ -34,7 +34,8 @@ ajustes_texto <- list(
     velez   = list(desp_dias = 1, desp_pct = -0.03)
 )
 
-# 6. Calcular máximos y últimos valores
+# SECCIÓN: CALCULOS INTERMEDIOS
+
 maximos <- map(jugadores, ~ acumulado[which.max(acumulado[[paste0("puntos_", .x)]]), ])
 names(maximos) <- jugadores
 
@@ -43,39 +44,38 @@ ultimos <- map(jugadores, ~ acumulado %>%
     select(julio, puntos = all_of(paste0("puntos_", .x))))
 names(ultimos) <- jugadores
 
-# 7. Construir data frame con posiciones de texto ajustadas individualmente
-maximos_ajustados <- map(jugadores, function(jugador) {
-    fila <- maximos[[jugador]]
-    puntos_col <- paste0("puntos_", jugador)
-    desp <- ajustes_texto[[jugador]]
+maximos_ajustados <- map(jugadores, ~ {
+    fila <- maximos[[.x]]
+    puntos_col <- paste0("puntos_", .x)
+    desp <- ajustes_texto[[.x]]
     rango_y <- diff(range(acumulado[[puntos_col]]))
 
     data.frame(
         fecha_texto = fila$julio + days(desp$desp_dias),
         y_texto = fila[[puntos_col]] + (rango_y * desp$desp_pct),
-        jugador = nombres_jugadores[[jugador]],
+        jugador = nombres_jugadores[[.x]],
         label = fila[[puntos_col]]
     )
 }) %>% bind_rows()
 
-# 8. Abrir servidor de gráficos
+# SECCIÓN: GRAFICA Y VISUALIZACIÓN
+
 hgd()
 hgd_browse()
 
-# 9. Graficar
 jul_24 <- ggplot(acumulado, aes(x = julio)) +
-    # Líneas por jugador
     map(jugadores, function(jugador) {
         geom_line(
-            aes(y = !!sym(paste0("puntos_", jugador)), color = nombres_jugadores[[jugador]]),
+            aes(y = !!sym(paste0("puntos_", jugador)), 
+            color = nombres_jugadores[[jugador]]),
             linewidth = 0.35
         )
     }) +
     # Puntos finales
-    map(jugadores, function(jugador) {
+    map(jugadores, ~ {
         geom_point(
-            data = ultimos[[jugador]],
-            aes(x = julio, y = puntos, color = nombres_jugadores[[jugador]]),
+            data = ultimos[[.x]],
+            aes(x = julio, y = puntos, color = nombres_jugadores[[.x]]),
             size = 0.7, show.legend = FALSE
         )
     }) +
@@ -108,4 +108,3 @@ ggsave(
     units = "in",
     dpi = 600
 )
-

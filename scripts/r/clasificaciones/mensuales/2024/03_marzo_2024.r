@@ -5,14 +5,14 @@ pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate, purrr, rla
 
 #SECCIÓN: IMPORTAR DATOS Y VISTA PREVIA
 
-url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_mensuales/2024/mayo_2024.csv"
+url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_mensuales/2024/marzo_2024.csv"
 acumulado <- read.csv(url)
 message("Vista previa de los datos:")
 glimpse(acumulado)
 
 # SECCIÓN: PREPARACIÓN DE DATOS
 
-acumulado$mayo <- dmy(acumulado$mayo)
+acumulado$marzo <- dmy(acumulado$marzo)
 
 # SECCIÓN: CONFIGURACIÓN
 
@@ -29,9 +29,9 @@ colores <- c(
 
 ajustes_texto <- list(
     barrera = list(desp_dias = 1, desp_pct = 0.01),
-    chochos = list(desp_dias = 1, desp_pct = 0.01),
-    dani    = list(desp_dias = 1, desp_pct = -0.01),
-    velez   = list(desp_dias = 1, desp_pct = 0.00)
+    chochos = list(desp_dias = 22, desp_pct = -0.02),
+    dani    = list(desp_dias = 1, desp_pct = 0.04),
+    velez   = list(desp_dias = 1, desp_pct = -0.03)
 )
 
 # SECCIÓN: CALCULOS INTERMEDIOS
@@ -41,7 +41,7 @@ names(maximos) <- jugadores
 
 ultimos <- map(jugadores, ~ acumulado %>%
     slice_tail(n = 1) %>%
-    select(mayo, puntos = all_of(paste0("puntos_", .x))))
+    select(marzo, puntos = all_of(paste0("puntos_", .x))))
 names(ultimos) <- jugadores
 
 maximos_ajustados <- map(jugadores, ~ {
@@ -51,7 +51,7 @@ maximos_ajustados <- map(jugadores, ~ {
     rango_y <- diff(range(acumulado[[puntos_jugador]]))
 
     data.frame(
-        ajuste_x = maximo$mayo + days(desp$desp_dias),
+        ajuste_x = maximo$marzo + days(desp$desp_dias),
         ajuste_y = maximo[[puntos_jugador]] + (rango_y * desp$desp_pct),
         jugador = nombres_jugadores[[.x]],
         etiqueta = maximo[[puntos_jugador]]
@@ -64,7 +64,7 @@ maximos_ajustados <- map(jugadores, ~ {
 hgd()
 hgd_browse()
 
-may_24 <- ggplot(acumulado, aes(x = mayo)) +
+mar_24 <- ggplot(acumulado, aes(x = marzo)) +
     map(jugadores, ~ {
         geom_line(
             aes(
@@ -79,7 +79,7 @@ may_24 <- ggplot(acumulado, aes(x = mayo)) +
         geom_point(
             data = ultimos[[.x]],
             aes(
-                x = mayo,
+                x = marzo,
                 y = puntos,
                 color = nombres_jugadores[[.x]]
             ),
@@ -96,8 +96,8 @@ may_24 <- ggplot(acumulado, aes(x = mayo)) +
     ) +
 
     labs(
-        title = "Tabla mensual - Mayo",
-        caption = "Datos a 31 de mayo de 2024",
+        title = "Tabla mensual - Marzo",
+        caption = "Datos a 31 de marzo de 2024",
         x = "Días",
         y = "Puntos",
         color = "Jugador"
@@ -108,11 +108,11 @@ may_24 <- ggplot(acumulado, aes(x = mayo)) +
     scale_color_manual(values = colores) +
     theme_few()
 
-    print(may_24)
+    print(mar_24)
 
 ggsave(
-    filename = "outputs/plots/r/clasificaciones/mensuales/2024/r_tabla_mayo_2024.png",
-    plot = may_24,
+    filename = "outputs/plots/r/clasificaciones/mensuales/2024/r_tabla_marzo_2024.png",
+    plot = mar_24,
     width = 16,
     height = 8,
     units = "in",
