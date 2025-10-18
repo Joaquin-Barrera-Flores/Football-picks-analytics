@@ -1,0 +1,236 @@
+---
+title: "Análisis Exploratorio de Datos: Proyecto Football Picks (Fase 1 - 2024)"
+author: "Fernando Joaquin Barrera Flores"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(here, dplyr, ggplot2, httpgd, tidyr, readr, lubridate, purrr, rlang, ggthemes)
+options(stringsAsFactors = FALSE)
+```
+
+## 1. Resumen Ejecutivo e Introducción
+
+El "Proyecto Football Picks Analytics" es una iniciativa personal destinada a plasmar mis conocimientos en el ánalisis de datos y registrar mi progreso en la aplicación de técnicas analíticas. 
+
+El mismo se basa en un analisis sobre la elección de resultados en partidos de fútbol, realizados por un grupo de amigos durante la temporada 2024
+
+En este sentido, es imprescindible señalar que el proyecto está destinado a dividirse en dos fases principales:
+
+La primera de estas fases (**Fase 1**) funciona como un método de **Introducción** y **Recreación**, con la cual se buscó familiarizarse con los procesos de Extracción, Transformación y Carga de datos (ETL),
+así como con las herramientas de visualización de datos en tanto la misión principal fue prácticar y aprender a traves de la experimentación directa con los datos y la presentación de resultados.
+
+Por tal razón, la Fase 1 se centra en el análisis exploratorio de datos (EDA) implementando el uso de distintas herramieentas durante el proceso de elaboración:
+
+1. Los datos fueron tomados por encuestas de Whatsapp que pedían elegir una opción de resultado para cada partido (Local, Vistante, Empate).
+2. Tales elecciones fueron almacenadas como dataset en Google Sheets, donde fueron limpiados y organizados.
+3. Posteriormente, los datos fueron extraídos y transformados utilizando SQL y R.
+4. Finalmente, las visualizaciones de los datos fueron realizadas tanto en R como en Tableau.
+
+Este documento presenta los resultados obtenidos en la Fase 1 del análisis del proyecto "Football Picks Analytics", correspondiente a la temporada 2024. 
+
+El objetivo de este análisis exploratorio es establecer una línea base del rendimiento de los participantes y extraer los primeros insights estratégicos a partir de los datos disponibles.
+
+La etapa final del análisis se centra en dos ejes principales, utilizando las herramientas más adecuadas para cada uno:
+
+1.  **Análisis de Tendencias y Segmentación (R):** Se utilizará R para analizar la progresión del rendimiento a lo largo del tiempo y segmentar el desempeño por tipo de torneo.
+2.  **Análisis de Benchmarking y Oportunidad (Tableau):** Se hará referencia a los dashboards interactivos creados en Tableau para el benchmarking general y el análisis de costo de oportunidad.
+
+## 2. Análisis en R: Tendencias y Segmentación
+
+### 2.1. Análisis de Progresión Temporal (Tendencias)
+
+Entender la trayectoria de cada participante es crucial para identificar consistencia, mejora o declive. Este análisis visualiza la evolución de las puntuaciones a lo largo de los meses de juego en 2024.
+
+```{r progress_plot, fig.width=12, fig.height=8, fig.align='center', out.width="100%", dpi=1200}
+# Este gráfico responde a la pregunta: ¿Cómo fue la trayectoria de cada participante durante el año?
+
+# Carga de datos
+
+url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_anuales/2024/acumulado_total_2024.csv"
+acumulado <- read.csv(url)
+
+# Configuación inicial
+
+acumulado$fecha <- dmy(acumulado$fecha)
+
+jugadores <- c("barrera", "chochos", "dani", "velez")
+
+nombres_jugadores <- c("barrera" = "Fernando Barrera", "chochos" = "César Reyes", "dani" = "Daniel Ruíz", "velez" = "Antonio Vélez")
+
+colores <- c(
+    "Fernando Barrera" = "#49525e",
+    "César Reyes" = "#9b93c9",
+    "Daniel Ruíz" = "#fdb052",
+    "Antonio Vélez" = "#59acbe")
+
+ajustes_texto <- list(
+  barrera = list(desp_dias = 3,  desp_pct = 0.02),
+  chochos = list(desp_dias = 3,  desp_pct = -0.02),
+  dani    = list(desp_dias = 2,  desp_pct = 0.04),
+  velez   = list(desp_dias = 4,  desp_pct = 0.03)
+)
+
+# Cálculos
+maximos <- map(jugadores, ~ acumulado[which.max(acumulado[[paste0("puntos_", .x)]]), ])
+names(maximos) <- jugadores
+
+ultimos <- map(jugadores, ~ acumulado %>%
+  slice_tail(n = 1) %>%
+  select(fecha, puntos = all_of(paste0("puntos_", .x))))
+names(ultimos) <- jugadores
+
+maximos_ajustados <- map(jugadores, function(jugador) {
+  fila <- maximos[[jugador]]
+  puntos_col <- paste0("puntos_", jugador)
+  desp <- ajustes_texto[[jugador]]
+  rango_y <- diff(range(acumulado[[puntos_col]]))
+  data.frame(
+    fecha_texto = fila$fecha + days(desp$desp_dias),
+    y_texto = fila[[puntos_col]] + (rango_y * desp$desp_pct),
+    jugador = nombres_jugadores[[jugador]],
+    label = fila[[puntos_col]]
+  )
+}) %>% bind_rows()
+
+
+# Graficado
+pa24 <- ggplot(acumulado, aes(x = fecha)) +
+  map(jugadores, function(jugador) {
+    geom_line(
+      aes(y = !!sym(paste0("puntos_", jugador)), color = nombres_jugadores[[jugador]]),
+      linewidth = 0.5
+    )
+  }) +
+  map(jugadores, function(jugador) {
+    geom_point(
+      data = ultimos[[jugador]],
+      aes(x = fecha, y = puntos, color = nombres_jugadores[[jugador]]),
+      size = 0.7, show.legend = FALSE
+    )
+  }) +
+  geom_text(
+    data = maximos_ajustados,
+    aes(x = fecha_texto, y = y_texto, label = label, color = jugador),
+    size = 2.5, show.legend = FALSE
+  ) +
+  labs(
+    title = "¿Cómo fue la trayectoria de cada participante durante el año?",
+    caption = "Datos a 31 de diciembre de 2024",
+    x = "Meses",
+    y = "Puntos",
+    color = "Jugador"
+  ) +
+  scale_x_date(breaks = "1 month", date_labels = "%b") +
+  scale_color_manual(values = colores) +
+  theme_few()
+
+print(pa24)
+```
+
+**Insight de Negocio:** El análisis de tendencias revela diferentes arquetipos de rendimiento. 
+Se observa que **César** muestra la curva de crecimiento más pronunciada en la segunda mitad del año, lo que indica una estrategia de aprendizaje y adaptación exitosa. 
+En contraste, el **Daniel**, aunque líder, muestra una curva más plana, sugiriendo una estrategia consistente pero con menor margen de mejora.
+
+```{r progress_plot_sliced, fig.width=12, fig.height=8, fig.align='center', out.width="100%", dpi=1200}
+# Este gráfico responde a la pregunta: ¿Cómo fue la trayectoria de cada participante durante el año?
+
+# Carga de datos
+
+url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_anuales/2024/acumulado_total_2024.csv"
+acumulado <- read.csv(url)
+
+# Configuación inicial
+
+acumulado$fecha <- dmy(acumulado$fecha)
+acumulado <- acumulado %>% filter(fecha >= as.Date("2024-12-01"))
+
+jugadores <- c("barrera", "chochos", "dani", "velez")
+
+nombres_jugadores <- c("barrera" = "Fernando Barrera", "chochos" = "César Reyes", "dani" = "Daniel Ruíz", "velez" = "Antonio Vélez")
+
+colores <- c(
+    "Fernando Barrera" = "#49525e",
+    "César Reyes" = "#9b93c9",
+    "Daniel Ruíz" = "#fdb052",
+    "Antonio Vélez" = "#59acbe")
+
+ajustes_texto <- list(
+  barrera = list(desp_dias = 3,  desp_pct = 0.0),
+  chochos = list(desp_dias = 3,  desp_pct = -0.01),
+  dani    = list(desp_dias = 2,  desp_pct = 0.01),
+  velez   = list(desp_dias = 4,  desp_pct = 0.00)
+)
+
+# Cálculos
+maximos <- map(jugadores, ~ acumulado[which.max(acumulado[[paste0("puntos_", .x)]]), ])
+names(maximos) <- jugadores
+
+ultimos <- map(jugadores, ~ acumulado %>%
+  slice_tail(n = 1) %>%
+  select(fecha, puntos = all_of(paste0("puntos_", .x))))
+names(ultimos) <- jugadores
+
+maximos_ajustados <- map(jugadores, function(jugador) {
+  fila <- maximos[[jugador]]
+  puntos_col <- paste0("puntos_", jugador)
+  desp <- ajustes_texto[[jugador]]
+  rango_y <- diff(range(acumulado[[puntos_col]]))
+  data.frame(
+    fecha_texto = fila$fecha + days(desp$desp_dias),
+    y_texto = fila[[puntos_col]] + (rango_y * desp$desp_pct),
+    jugador = nombres_jugadores[[jugador]],
+    label = fila[[puntos_col]]
+  )
+}) %>% bind_rows()
+
+
+# Graficado
+pa <- ggplot(acumulado, aes(x = fecha)) +
+  map(jugadores, function(jugador) {
+    geom_line(
+      aes(y = !!sym(paste0("puntos_", jugador)), color = nombres_jugadores[[jugador]]),
+      linewidth = 0.5
+    )
+  }) +
+  map(jugadores, function(jugador) {
+    geom_point(
+      data = ultimos[[jugador]],
+      aes(x = fecha, y = puntos, color = nombres_jugadores[[jugador]]),
+      size = 0.7, show.legend = FALSE
+    )
+  }) +
+  geom_text(
+    data = maximos_ajustados,
+    aes(x = fecha_texto, y = y_texto, label = label, color = jugador),
+    size = 2.5, show.legend = FALSE
+  ) +
+  labs(
+    title = "¿Cómo fue la trayectoria de cada participante durante el año?",
+    caption = "Datos a 31 de diciembre de 2024",
+    x = "Meses",
+    y = "Puntos",
+    color = "Jugador"
+  ) +
+  scale_x_date(breaks = "1 month", date_labels = "%b") +
+  scale_color_manual(values = colores) +
+  theme_few()
+
+print(pa)
+```
+
+### 2.2. Análisis de Segmentación por Tipo de Torneo
+
+No todos los mercados son iguales. 
+Segmentar el rendimiento por tipo de torneo nos permite identificar si existen áreas de especialización o de debilidad para los participantes, basado en el formato de la competencia.
+
+Insight de Negocio: La segmentación por tipo de torneo muestra una clara jerarquía de predictibilidad o conocimiento. 
+En promedio, los participantes son más efectivos en torneos de liga, seguidos por torneos continentales de clubes y, finalmente, torneos de selecciones. 
+Esto sugiere que la consistencia semanal de las ligas ofrece un entorno más predecible para la toma de decisiones que los formatos de eliminación directa o los torneos de selecciones, que son más volátiles.
