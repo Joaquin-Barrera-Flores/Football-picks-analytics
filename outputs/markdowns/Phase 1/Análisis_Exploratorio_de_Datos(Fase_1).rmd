@@ -54,8 +54,7 @@ Entender la trayectoria de cada participante es crucial para identificar consist
 
 # Carga de datos
 
-url <- "https://raw.githubusercontent.com/Joaquin-Barrera-Flores/Football-picks-analytics/main/data/raw/acumulados_anuales/2024/acumulado_total_2024.csv"
-acumulado <- read.csv(url)
+df <- read.csv("../../data/raw/acumulados_anuales/2024/acumulado_total_2024.csv")
 
 # Configuación inicial
 
